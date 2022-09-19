@@ -1,7 +1,7 @@
-import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
+
+import 'adb_client.dart';
 
 void main() {
   runApp(const MyApp());
@@ -52,24 +52,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<String> texts = [];
+  AdbClient adbClient = AdbClient();
 
   // how to do this?
   _MyHomePageState() {
     // find adb
-    print("111");
-    Process.start('powershell', ['adb', 'logcat'])
-        .then((process) {
-          const Utf8Codec().decodeStream(process.stdout)
-          .then((value) {
-            print(value);
-          }).catchError((err) {
-            print(err);
-          });
-        })
-        .catchError((err) => {
-          print("error: " + err)
-        });
-    print("222");
+    adbClient.start();
   }
 
   @override
