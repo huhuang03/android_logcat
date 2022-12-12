@@ -1,7 +1,6 @@
-
 import 'package:flutter/material.dart';
 
-import 'adb_client.dart';
+import 'device.dart';
 
 void main() {
   runApp(const MyApp());
@@ -52,31 +51,44 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<String> texts = [];
-  AdbClient adbClient = AdbClient();
+  Device device = Device();
 
-  // how to do this?
   _MyHomePageState() {
-    // find adb
-    adbClient.start();
+    device.setLogListener((log) {
+      texts.add(log);
+    });
+  }
+
+  void toggleStartAndStop() {
+    if (device.hasStarted()) {
+      device.stop();
+    } else {
+      device.start();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: ListView.builder(itemBuilder: (BuildContext context, int index) {
-        return Text(texts[index]);
-      }, itemCount: texts.length,)
-    );
+        body: Column(
+      children: [
+        Row(
+          children: [
+            IconButton(
+                onPressed: () {
+                  toggleStartAndStop();
+                },
+                icon:
+                    Icon(device.hasStarted() ? Icons.stop : Icons.play_arrow)),
+          ],
+        ),
+        ListView.builder(
+          itemBuilder: (BuildContext context, int index) {
+            return Text(texts[index]);
+          },
+          itemCount: texts.length,
+        ),
+      ],
+    ));
   }
 }
