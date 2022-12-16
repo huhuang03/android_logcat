@@ -1,9 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
 typedef OnLogListener = Function(String log);
 
 class Device {
   bool _hasStarted = false;
   bool _isStarting = false;
   bool _isPaused = false;
+  Process? _process;
 
   OnLogListener? onLogListener;
 
@@ -15,7 +19,23 @@ class Device {
     if (isStarting() || hasStarted()) {
       return;
     }
-    _hasStarted = true;
+
+    _isStarting = true;
+
+    Process.start("adb", ["logcat"]).then((value) {
+      _process = value;
+      _process!.stdout.transform(utf8.decoder)
+      .forEach((element) {
+        if (!_isPaused) {
+          onLogListener?.call(element);
+        }
+      });
+      _isStarting = false;
+      _hasStarted = true;
+    }).catchError((err) {
+      print("start process trigger error: $err");
+      _isStarting= false;
+    });
   }
 
   void pause() {
@@ -24,6 +44,7 @@ class Device {
 
   void stop() {
     _hasStarted = false;
+    _process?.kill(ProcessSignal.sigstop);
   }
 
   bool hasStarted() {

@@ -22,3 +22,6 @@ samples, guidance on mobile development, and a full API reference.
 
 # links
 - [code style](https://dart.dev/guides/language/effective-dart/style)
+ 
+  <key>com.apple.security.app-sandbox</key>
+  <true/>

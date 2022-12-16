@@ -52,19 +52,30 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<String> texts = [];
   Device device = Device();
+  final ScrollController _scrollController = ScrollController();
 
   _MyHomePageState() {
     device.setLogListener((log) {
+      _addLog(log);
+    });
+  }
+
+  void _addLog(String log) {
+    print("append log: $log");
+    setState(() {
       texts.add(log);
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
   }
 
   void toggleStartAndStop() {
-    if (device.hasStarted()) {
-      device.stop();
-    } else {
-      device.start();
-    }
+    setState(() {
+      if (device.hasStarted()) {
+        device.stop();
+      } else {
+        device.start();
+      }
+    });
   }
 
   @override
@@ -80,13 +91,25 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 icon:
                     Icon(device.hasStarted() ? Icons.stop : Icons.play_arrow)),
+
+            IconButton(
+                onPressed: () {
+                  setState(() {
+                    device.pause();
+                  });
+                },
+                icon:
+                Icon(Icons.pause)),
           ],
         ),
-        ListView.builder(
-          itemBuilder: (BuildContext context, int index) {
-            return Text(texts[index]);
-          },
-          itemCount: texts.length,
+        Expanded(
+          child: ListView.builder(
+            controller: _scrollController,
+            itemBuilder: (BuildContext context, int index) {
+              return Text(texts[index]);
+            },
+            itemCount: texts.length,
+          ),
         ),
       ],
     ));
