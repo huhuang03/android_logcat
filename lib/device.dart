@@ -15,14 +15,21 @@ class Device {
     this.onLogListener = onLogListener;
   }
 
-  void start() {
+  void start({List<String>? tags}) {
     if (isStarting() || hasStarted()) {
       return;
     }
 
+    stop();
     _isStarting = true;
+    List<String> params = List.empty(growable: true);
+    params.add("logcat");
+    tags?.forEach((element) {
+      params.add("-s");
+      params.add(element);
+    });
 
-    Process.start("adb", ["logcat"]).then((value) {
+    Process.start("adb", params).then((value) {
       _process = value;
       _process!.stdout.transform(utf8.decoder)
       .forEach((element) {

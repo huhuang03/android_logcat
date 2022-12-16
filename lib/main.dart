@@ -95,7 +95,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   void _addLog(String log) {
-    // print("append log: $log");
+    if (log.length > 1) {
+      if (log.endsWith("\n"))  {
+        log = log.substring(0, log.length - 1);
+      }
+    }
     setState(() {
       texts.add(log);
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -107,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (device.hasStarted()) {
         device.stop();
       } else {
-        device.start();
+        device.start(tags: ["xiaoan"]);
       }
     });
   }
