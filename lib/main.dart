@@ -1,3 +1,6 @@
+import 'dart:ffi';
+
+import 'package:android_logcat/components/tag_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -102,8 +105,17 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     setState(() {
       texts.add(log);
+      // can I check has scrolled to end?
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
+  }
+
+  void _scrollToEnd() {
+
+  }
+
+  Bool _hasScrolledToEnd() {
+    return false;
   }
 
   void toggleStartAndStop() {
@@ -155,6 +167,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _decrementFontSize, icon: const Icon(Icons.remove))
           ],
         ),
+        TagInput((tags) {
+          setState(() {
+            texts.clear();
+            device.stop();
+            device.start(tags: tags);
+          });
+        }),
         Expanded(
           child: ListView.builder(
             controller: _scrollController,
